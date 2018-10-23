@@ -31,18 +31,25 @@ import cn.edu.pku.tianran.bean.TodayWeather;
 import cn.edu.pku.tianran.util.NetUtil;
 
 public class MainActivity extends Activity implements OnClickListener{
+    //定义整型变量UPDATE_TODAY_WEATHER，表示更新操作
     private static final int UPDATE_TODAY_WEATHER = 1;
+    //为更新按钮图标创建变量
     private ImageView mUpdateBtn;
     private ImageView mCitySelect;
 
+    //初始化界面控件
     private TextView cityTv,timeTv,humidityTv,weekTv,pmDataTv,pmQualityTv,
             temperatureTv,climateTv,windTv,city_name_Tv;
     private ImageView weatherImg,pmImg;
 
+    //新建一个Handler对象
     private Handler mHandler = new Handler() {
+        //重写handleMessage方法对Message进行处理
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
+                //如果信息为更新，则执行更新
                 case UPDATE_TODAY_WEATHER:
+                    //在主线程中更新UI
                     updateTodayWeather((TodayWeather) msg.obj);
                     break;
                 default:
@@ -57,8 +64,10 @@ public class MainActivity extends Activity implements OnClickListener{
         setContentView(R.layout.weather_info);
 
         mUpdateBtn = (ImageView) findViewById(R.id.title_update_btn);
+        //给更新按钮图片添加监听器
         mUpdateBtn.setOnClickListener(this);
 
+        //判断并显示网络状态
         if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE){
             Log.d("WeatherGo","网络ok");
             Toast.makeText(this, "网络ok！", Toast.LENGTH_SHORT).show();
@@ -68,12 +77,15 @@ public class MainActivity extends Activity implements OnClickListener{
             Toast.makeText(MainActivity.this,"网络挂了",Toast.LENGTH_SHORT).show();
         }
 
+        //初始化城市选择控件，并添加监听器
         mCitySelect = (ImageView) findViewById(R.id.title_city_manager);
         mCitySelect.setOnClickListener(this);
 
+        //初始化界面信息
         initView();
     }
 
+    //初始化界面控件内容
     void initView(){
         city_name_Tv = (TextView) findViewById(R.id.title_city_name);
         cityTv = (TextView) findViewById(R.id.city);
@@ -89,6 +101,7 @@ public class MainActivity extends Activity implements OnClickListener{
         pmImg = (ImageView) findViewById(R.id.pm2_5_img);
         weatherImg = (ImageView) findViewById(R.id.weather_img);
 
+        //初始值都设置为N/A
         city_name_Tv.setText("N/A");
         cityTv.setText("N/A");
         timeTv.setText("N/A");
@@ -106,28 +119,37 @@ public class MainActivity extends Activity implements OnClickListener{
 
 
     /**
-     *
+     * 获取某城市天气情况
      * @param cityCode
      */
     private void queryWeatherCode(String cityCode){
+        //根据城市代码得到天气情况的地址
         final String address = "http://wthrcdn.etouch.cn/WeatherApi?citykey=" + cityCode;
-
         Log.d("WeatherGo",address);
+
+        //新建一个线程来获得天气情况
         new Thread(new Runnable() {
             @Override
             public void run() {
+                //创建HttpURLConnection实例变量
                 HttpURLConnection con = null;
                 TodayWeather todayWeather = null;
                 try{
+                    //新建一个URL对象，并传入目标的地址
                     URL url = new URL(address);
+                    //调用openConnection（）方法得到一个实例
                     con = (HttpURLConnection)url.openConnection();
+                    //设置http请求方法为GET
                     con.setRequestMethod("GET");
+                    //设置超时
                     con.setConnectTimeout(8000);
                     con.setReadTimeout(8000);
+                    //获取服务器返回的输入流
                     InputStream in = con.getInputStream();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(in));
                     StringBuilder response = new StringBuilder();
                     String str;
+                    //依次读入各行
                     while((str=reader.readLine()) != null){
                         response.append(str);
                         Log.d("WeatherGo", str);
@@ -135,17 +157,22 @@ public class MainActivity extends Activity implements OnClickListener{
                     String responseStr=response.toString();
                     Log.d("WeatherGo", responseStr);
 
+                    //解析获得的回复到TodayWeather结构
                     todayWeather = parseXML(responseStr);
                     if (todayWeather != null){
                         Log.d("WeatherGo",todayWeather.toString());
+                        //新建一个消息实例，填入what字段和obj字段
                         Message msg = new Message();
                         msg.what = UPDATE_TODAY_WEATHER;
                         msg.obj = todayWeather;
+                        //发出消息
                         mHandler.sendMessage(msg);
                     }
                 }catch (Exception e){
                     e.printStackTrace();
-                }finally {
+                }
+                //断开连接
+                finally {
                     if(con != null) {
                         con.disconnect();
                     }
@@ -156,18 +183,28 @@ public class MainActivity extends Activity implements OnClickListener{
 
     @Override
     public void onClick(View view){
+        //点击城市选择图标，则转到城市选择界面
         if(view.getId() == R.id.title_city_manager){
+            //利用Intent来切换活动，目标活动SelectCity
             Intent i = new Intent(this,SelectCity.class);
             startActivityForResult(i,1);
         }
+
+        //更新按钮事件
         if (view.getId() == R.id.title_update_btn){
+            //得到sharedpreferences对象
             SharedPreferences sharedPreferences = getSharedPreferences("config",MODE_PRIVATE);
+            //设置默认的城市代码
             String cityCode = sharedPreferences.getString("main_city_code","101010100");
             Log.d("WeatherGo","cityCode");
 
+            //检测并输出网络网络状况
             if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE){
                 Log.d("WeatherGo","网络ok");
+
+                //根据城市代码获取对应的天气情况
                 queryWeatherCode(cityCode);
+
             }else{
                 Log.d("WeatherGo","网络挂了");
                 Toast.makeText(MainActivity.this,"网络挂了！",Toast.LENGTH_LONG).show();
@@ -189,9 +226,10 @@ public class MainActivity extends Activity implements OnClickListener{
         }
     }
 
-
+        //使用PULL方式从长的字符串中解析出需要的信息
         private TodayWeather parseXML(String xmldata){
         TodayWeather todayWeather = null;
+        //初始化部分天气信息的数值
         int fengxiangCount=0;
         int fengliCount =0;
         int dateCount = 0;
@@ -200,11 +238,16 @@ public class MainActivity extends Activity implements OnClickListener{
         int typeCount =0;
 
         try{
+            //获取一个XmlPullParserFactory的实例
             XmlPullParserFactory fac = XmlPullParserFactory.newInstance();
+            //通过fac实例得到XmlPullParser对象
             XmlPullParser xmlPullParser = fac.newPullParser();
+            //将XML数据设置进去
             xmlPullParser.setInput(new StringReader(xmldata));
+            //得到当前的解析事件
             int eventType = xmlPullParser.getEventType();
             Log.d("WeatherGo","parseXML");
+            //循环进行解析
             while (eventType != XmlPullParser.END_DOCUMENT){
                 switch (eventType) {
                     case XmlPullParser.START_DOCUMENT:
@@ -214,7 +257,7 @@ public class MainActivity extends Activity implements OnClickListener{
                             todayWeather = new TodayWeather();
                         }
                         if(todayWeather != null) {
-
+                            //根据解析得到的信息更新todayWeather中的内容
                             if (xmlPullParser.getName().equals("city")) {
                                 eventType = xmlPullParser.next();
                                 todayWeather.setCity(xmlPullParser.getText());
@@ -273,6 +316,7 @@ public class MainActivity extends Activity implements OnClickListener{
             return todayWeather;
     }
 
+    //利用TodayWeather对象更新UI中的控件
     void updateTodayWeather(TodayWeather todayWeather){
         city_name_Tv.setText(todayWeather.getCity()+"天气");
         cityTv.setText(todayWeather.getCity());

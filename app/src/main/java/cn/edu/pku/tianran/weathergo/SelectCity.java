@@ -15,6 +15,7 @@ import cn.edu.pku.tianran.bean.City;
 
 
 public class SelectCity extends Activity implements View.OnClickListener{
+    //初始化返回按钮
     private ImageView mBackBtn;
 
     private Myadapter myadapter;
@@ -44,7 +45,7 @@ public class SelectCity extends Activity implements View.OnClickListener{
         mList.setAdapter(myadapter);
         mList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
            @Override
-           public void onItemClick(AdapterView adapterView,View view,int position,long l){
+           public void onItemClick(AdapterView<?> adapterView,View view,int position,long l){
                City city = filterDataList.get(position);
                Intent i =new Intent();
                i.putExtra("cityCode",city.getNumber());
@@ -58,8 +59,10 @@ public class SelectCity extends Activity implements View.OnClickListener{
     @Override
     public void onClick(View v){
         switch (v.getId()){
+            //点击返回图标，返回上一活动
             case R.id.title_back:
                 Intent i = new Intent();
+                //在finish之前传递数据
                 i.putExtra("cityCode","101160101");
                 setResult(RESULT_OK,i);
                 finish();
