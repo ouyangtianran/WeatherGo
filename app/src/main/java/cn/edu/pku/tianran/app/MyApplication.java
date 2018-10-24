@@ -27,12 +27,16 @@ public class MyApplication extends Application{
         super.onCreate();
         Log.d(TAG,"MyApplication->Oncreate");
         myApplication = this;
+        //打开或者创建数据库
         mCityDB = openCityDB();
+        //初始化城市列表
         initCityList();
     }
 
+    //初始化城市列表
     private void initCityList(){
         mCityList = new ArrayList<City>();
+        //新建一个线程初始化城市列表
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -43,6 +47,7 @@ public class MyApplication extends Application{
     }
 
 
+    //准备城市列表（从城市数据库生成的列表中抽取名字和编码两项）
     private boolean prepareCityList() {
         mCityList = mCityDB.getAllCity();
         int i=0;
@@ -56,6 +61,7 @@ public class MyApplication extends Application{
         return true;
     }
 
+    //返回城市列表
     public List<City> getCityList() {
         return mCityList;
     }
@@ -67,7 +73,9 @@ public class MyApplication extends Application{
             return myApplication;
         }
 
+    //打开或者创建一个数据库
     private CityDB openCityDB() {
+        //构建数据库地址
         String path = "/data"
                 + Environment.getDataDirectory().getAbsolutePath
                 ()
@@ -77,6 +85,7 @@ public class MyApplication extends Application{
                 + CityDB.CITY_DB_NAME;
         File db = new File(path);
         Log.d(TAG, path);
+        //数据库不存在则建立
         if (!db.exists()) {
             String pathfolder = "/data"
                     + Environment.getDataDirectory().getAbsolutePath()
