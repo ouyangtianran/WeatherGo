@@ -7,18 +7,31 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.tianran.weathergo.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.edu.pku.tianran.adapter.CityAdapter;
 import cn.edu.pku.tianran.app.MyApplication;
 import cn.edu.pku.tianran.bean.City;
+import cn.edu.pku.tianran.bean.CityListItem;
 
 
 public class SelectCity extends Activity implements View.OnClickListener{
     //初始化返回按钮
     private ImageView mBackBtn;
 
-    private Myadapter myadapter;
+    //ListView控件
+    private ListView mListView;
+    //从数据库中获得的城市列表
+    private List<City> cityList;
+    //用于在ListView中展示的城市列表
+    private List<CityListItem> filterCityList = new ArrayList<>();
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -31,27 +44,30 @@ public class SelectCity extends Activity implements View.OnClickListener{
     }
 
     private void initViews(){
+        //为返回按钮增加监听器
         mBackBtn = findViewById(R.id.title_back);
         mBackBtn.setOnClickListener(this);
-        mClearEditText = (ClearEditText) findViewById(R.id.search_city);
 
-        mList = (ListView) findViewById(R.id.title_list);
-        MyApplication myApplication = (MyApplication) getApplication();
+        mListView = findViewById(R.id.title_list);
+        MyApplication myApplication = MyApplication.getInstance();
+        //得到数据库生成的城市列表
         cityList = myApplication.getCityList();
-        for(City city : citylist){
-            filterDataList.add(city);
+        //提取需要的信息，初始化需要展示的城市列表内容
+        for (City city:cityList){
+            filterCityList.add(new CityListItem(city.getCity(),city.getNumber()));
         }
-        myadapter = new Myadapter(SelectCity.this,cityList);
-        mList.setAdapter(myadapter);
-        mList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-           @Override
-           public void onItemClick(AdapterView<?> adapterView,View view,int position,long l){
-               City city = filterDataList.get(position);
-               Intent i =new Intent();
-               i.putExtra("cityCode",city.getNumber());
-               setResult(RESULT_OK);
-               finish();
-           }
+        //创建CityAdapter对象
+        CityAdapter adapter = new CityAdapter(SelectCity.this,R.layout.city_list_item,
+                filterCityList);
+        //传给ListView
+        mListView.setAdapter(adapter);
+        //添加监听器，为点击事件增加功能
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                CityListItem city = filterCityList.get(position);
+                Toast.makeText(SelectCity.this,city.getName(),Toast.LENGTH_SHORT).show();
+            }
         });
 
     }

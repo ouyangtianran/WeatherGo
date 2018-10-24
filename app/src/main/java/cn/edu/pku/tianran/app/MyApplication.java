@@ -47,8 +47,9 @@ public class MyApplication extends Application{
     }
 
 
-    //准备城市列表（从城市数据库生成的列表中抽取名字和编码两项）
+    //准备城市列表,输出城市和代码两项
     private boolean prepareCityList() {
+        //初始化mCityList
         mCityList = mCityDB.getAllCity();
         int i=0;
         for (City city : mCityList) {
