@@ -215,12 +215,12 @@ public class MainActivity extends Activity implements OnClickListener{
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             String newCityCode = data.getStringExtra("cityCode");
-            Log.d("myWeather", "选择的城市代码为" + newCityCode);
+            Log.d("WeatherGo", "选择的城市代码为" + newCityCode);
             if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
-                Log.d("myWeather", "网络OK");
+                Log.d("WeatherGo", "网络OK");
                 queryWeatherCode(newCityCode);
             } else {
-                Log.d("myWeather", "网络挂了");
+                Log.d("WeatherGo", "网络挂了");
                 Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
             }
         }
@@ -329,39 +329,44 @@ public class MainActivity extends Activity implements OnClickListener{
         climateTv.setText(todayWeather.getType());
         windTv.setText("风力:"+todayWeather.getFengli());
 
-
-        double pmValue = Double.parseDouble(todayWeather.getPm25());
-        if (pmValue>=0){
-            if(pmValue<51) pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
-            else if (pmValue<101) pmImg.setImageResource(R.drawable.biz_plugin_weather_51_100);
-            else if (pmValue<151) pmImg.setImageResource(R.drawable.biz_plugin_weather_101_150);
-            else if (pmValue<201) pmImg.setImageResource(R.drawable.biz_plugin_weather_151_200);
-            else if (pmValue<301) pmImg.setImageResource(R.drawable.biz_plugin_weather_201_300);
-            else pmImg.setImageResource(R.drawable.biz_plugin_weather_greater_300);
+        if(todayWeather.getPm25()!=null){
+            double pmValue = Double.parseDouble(todayWeather.getPm25());
+            if (pmValue>=0){
+                if(pmValue<51) pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
+                else if (pmValue<101) pmImg.setImageResource(R.drawable.biz_plugin_weather_51_100);
+                else if (pmValue<151) pmImg.setImageResource(R.drawable.biz_plugin_weather_101_150);
+                else if (pmValue<201) pmImg.setImageResource(R.drawable.biz_plugin_weather_151_200);
+                else if (pmValue<301) pmImg.setImageResource(R.drawable.biz_plugin_weather_201_300);
+                else pmImg.setImageResource(R.drawable.biz_plugin_weather_greater_300);
+            }
         }
 
 
-        String weatherType =todayWeather.getType();
-        if (weatherType.equals("晴")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_qing);
-        else if (weatherType.equals("暴雪")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_baoxue);
-        else if (weatherType.equals("暴雨")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_baoyu);
-        else if (weatherType.equals("大暴雨")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_dabaoyu);
-        else if (weatherType.equals("大雪")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_daxue);
-        else if (weatherType.equals("大雨"))weatherImg.setImageResource(R.drawable.biz_plugin_weather_dayu);
-        else if (weatherType.equals("多云")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_duoyun);
-        else if (weatherType.equals("雷阵雨")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_leizhenyu);
-        else if (weatherType.equals("雷阵雨冰雹")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_leizhenyubingbao);
-        else if (weatherType.equals("沙尘暴")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_shachenbao);
-        else if (weatherType.equals("特大暴雨")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_tedabaoyu);
-        else if (weatherType.equals("雾")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_wu);
-        else if (weatherType.equals("小雪")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_xiaoxue);
-        else if (weatherType.equals("小雨")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_xiaoyu);
-        else if (weatherType.equals("阴")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_yin);
-        else if (weatherType.equals("雨夹雪")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_yujiaxue);
-        else if (weatherType.equals("阵雪")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_zhenxue);
-        else if (weatherType.equals("阵雨")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_zhenyu);
-        else if (weatherType.equals("中雪")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_zhongxue);
-        else if (weatherType.equals("中雨")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_zhongyu);
+        if(todayWeather.getType()!=null){
+            String weatherType =todayWeather.getType();
+            if (weatherType.equals("晴")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_qing);
+            else if (weatherType.equals("暴雪")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_baoxue);
+            else if (weatherType.equals("暴雨")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_baoyu);
+            else if (weatherType.equals("大暴雨")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_dabaoyu);
+            else if (weatherType.equals("大雪")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_daxue);
+            else if (weatherType.equals("大雨"))weatherImg.setImageResource(R.drawable.biz_plugin_weather_dayu);
+            else if (weatherType.equals("多云")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_duoyun);
+            else if (weatherType.equals("雷阵雨")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_leizhenyu);
+            else if (weatherType.equals("雷阵雨冰雹")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_leizhenyubingbao);
+            else if (weatherType.equals("沙尘暴")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_shachenbao);
+            else if (weatherType.equals("特大暴雨")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_tedabaoyu);
+            else if (weatherType.equals("雾")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_wu);
+            else if (weatherType.equals("小雪")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_xiaoxue);
+            else if (weatherType.equals("小雨")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_xiaoyu);
+            else if (weatherType.equals("阴")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_yin);
+            else if (weatherType.equals("雨夹雪")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_yujiaxue);
+            else if (weatherType.equals("阵雪")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_zhenxue);
+            else if (weatherType.equals("阵雨")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_zhenyu);
+            else if (weatherType.equals("中雪")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_zhongxue);
+            else if (weatherType.equals("中雨")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_zhongyu);
+
+        }
+
 
         Toast.makeText(MainActivity.this,"更新成功！",Toast.LENGTH_SHORT).show();
     }
