@@ -329,6 +329,7 @@ public class MainActivity extends Activity implements OnClickListener{
         climateTv.setText(todayWeather.getType());
         windTv.setText("风力:"+todayWeather.getFengli());
 
+        //若没有pm2.5信息则先跳过
         if(todayWeather.getPm25()!=null){
             double pmValue = Double.parseDouble(todayWeather.getPm25());
             if (pmValue>=0){
@@ -342,6 +343,7 @@ public class MainActivity extends Activity implements OnClickListener{
         }
 
 
+        //若没有天气类型信息则先跳过
         if(todayWeather.getType()!=null){
             String weatherType =todayWeather.getType();
             if (weatherType.equals("晴")) weatherImg.setImageResource(R.drawable.biz_plugin_weather_qing);
