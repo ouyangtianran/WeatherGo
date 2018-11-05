@@ -42,6 +42,9 @@ public class MainActivity extends Activity implements OnClickListener{
             temperatureTv,climateTv,windTv,city_name_Tv;
     private ImageView weatherImg,pmImg;
 
+    //当前城市代码
+    private String cityCode;
+
     //新建一个Handler对象
     private Handler mHandler = new Handler() {
         //重写handleMessage方法对Message进行处理
@@ -187,6 +190,7 @@ public class MainActivity extends Activity implements OnClickListener{
         if(view.getId() == R.id.title_city_manager){
             //利用Intent来切换活动，目标活动SelectCity
             Intent i = new Intent(this,SelectCity.class);
+            i.putExtra("cityCode",cityCode);
             startActivityForResult(i,1);
         }
 
@@ -194,8 +198,8 @@ public class MainActivity extends Activity implements OnClickListener{
         if (view.getId() == R.id.title_update_btn){
             //得到sharedpreferences对象
             SharedPreferences sharedPreferences = getSharedPreferences("config",MODE_PRIVATE);
-            //设置默认的城市代码
-            String cityCode = sharedPreferences.getString("main_city_code","101010100");
+            //获取当前显示城市代码，如果获取不到则取默认值101010100（北京）
+            cityCode = sharedPreferences.getString("main_city_code","101010100");
             Log.d("WeatherGo","cityCode");
 
             //检测并输出网络网络状况
@@ -216,6 +220,17 @@ public class MainActivity extends Activity implements OnClickListener{
         if (requestCode == 1 && resultCode == RESULT_OK) {
             String newCityCode = data.getStringExtra("cityCode");
             Log.d("WeatherGo", "选择的城市代码为" + newCityCode);
+
+            //将返回城市代码存入到sharedpreferrence
+            //得到sharedpreferences对象
+            SharedPreferences sharedPreferences = getSharedPreferences("config",MODE_PRIVATE);
+            //创建编辑器
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            //存入
+            editor.putString("main_city_code",newCityCode);
+            editor.apply();
+
+
             if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
                 Log.d("WeatherGo", "网络OK");
                 queryWeatherCode(newCityCode);
