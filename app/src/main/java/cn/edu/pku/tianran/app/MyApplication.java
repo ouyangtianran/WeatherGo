@@ -31,6 +31,10 @@ public class MyApplication extends Application{
         mCityDB = openCityDB();
         //初始化城市列表
         initCityList();
+
+
+
+
     }
 
     //初始化城市列表
