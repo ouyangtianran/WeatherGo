@@ -19,6 +19,7 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.baidu.location.Poi;
 import com.example.tianran.weathergo.R;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -37,6 +38,7 @@ import java.util.List;
 
 import cn.edu.pku.tianran.adapter.ViewPagerAdapter;
 import cn.edu.pku.tianran.bean.TodayWeather;
+import cn.edu.pku.tianran.util.BDLocationUtils;
 import cn.edu.pku.tianran.util.NetUtil;
 
 public class MainActivity extends Activity implements OnClickListener,ViewPager.OnPageChangeListener{
@@ -72,10 +74,6 @@ public class MainActivity extends Activity implements OnClickListener,ViewPager.
     private ImageView climateImg,climateImg1,climateImg2,climateImg3,climateImg4,climateImg5;
 
 
-    //定位
-    LocationClient mLoctionClient = null;//用户位置代理类
-    BDLocationListener myListener = new MyLocationListener();//用来监听用户位置代理的类，具体定义我会在下面定义
-    String code = null;//传递你当前的位置在哪里，因为用了两个函数，靠全局变量来传递参数
 
 
     //新建一个Handler对象
@@ -117,10 +115,9 @@ public class MainActivity extends Activity implements OnClickListener,ViewPager.
         }
 
         //初始化城市选择控件，并添加监听器
-        mCitySelect = (ImageView) findViewById(R.id.title_city_manager);
-        mCitySelect.setOnClickListener(this);
-
-        startLocate();//查询用户位置的函数
+        BDLocationUtils bdLocationUtils = new BDLocationUtils(MainActivity.this);
+        bdLocationUtils.doLocation();//开启定位
+        bdLocationUtils.mLocationClient.start();//开始定位
 
 
         //初始化滑动页面
@@ -133,37 +130,7 @@ public class MainActivity extends Activity implements OnClickListener,ViewPager.
         initView();
     }
 
-    private void startLocate() {
-        /**
-         * 百度定位
-         * */
-        mLoctionClient = new LocationClient(getApplicationContext());//创建一个用户位置代理的类
-        mLoctionClient.registerLocationListener(myListener);//注册其监听事件
-        LocationClientOption option = new LocationClientOption();//设置一个用户位置代理的选项类
-        option.setLocationMode(LocationClientOption.LocationMode.Battery_Saving);//设置该模式为省电的模式
-        option.setCoorType("bd0911");//设置坐标的类型
-        option.setOpenGps(true);//设置是否打开GPS
-        option.setLocationNotify(true);//设置是否当GPS有效时按照1S/1次频率输出GPS结果
-        option.setIsNeedAddress(true);//，设置是否需要地址信息，默认不需要！！注意，这个很重要，我们是需要返回地址的
-        option.setIsNeedLocationDescribe(true);//设置是否需要位置语义化结果
-        option.setIsNeedLocationPoiList(true);//设置是否需要POI结果
-        option.setIgnoreKillProcess(false);//默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死
-        int span = 1000;
-        option.setScanSpan(span);//可选，默认0，即仅定位一次，设置发起定位请
-        mLoctionClient.setLocOption(option);//将这些选项加载到用户位置代理类
-        mLoctionClient.start();//开始位置代理
-    }
 
-    private class MyLocationListener implements BDLocationListener{
-        @Override
-        public void onReceiveLocation(BDLocation location) {
-            Log.d("where","country:"+location.getCountry());
-            code = location.getCity();
-            code = code.replace("市","");
-            code = code.replace("省","");
-            Log.d("location","定位显示："+code);
-        }
-    }
 
 
 
