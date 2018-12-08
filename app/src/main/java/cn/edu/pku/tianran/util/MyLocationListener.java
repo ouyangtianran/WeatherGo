@@ -106,6 +106,11 @@ public class MyLocationListener implements BDLocationListener {
         Const.LONGITUDE = location.getLongitude();
         Const.LATITUDE = location.getLatitude();
         Const.ADDRESS = location.getAddrStr();
+        Const.CITY = location.getCity();
+        Log.d("location",Const.CITY.substring(0, Const.CITY.indexOf("市")));
+        Const.DISTRICT = location.getDistrict();
+        Log.d("location",Const.DISTRICT);
+
     }
 
 

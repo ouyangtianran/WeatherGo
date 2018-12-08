@@ -71,6 +71,10 @@ public class MyApplication extends Application{
         return mCityList;
     }
 
+    public String getNumber(String cityName){
+        return mCityDB.getNumber(cityName);
+    }
+
 
 
 

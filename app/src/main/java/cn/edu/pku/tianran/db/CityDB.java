@@ -3,6 +3,7 @@ package cn.edu.pku.tianran.db;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,20 @@ public class CityDB {
             list.add(item);
         }
         return list;
+    }
+    public String getNumber(String cityName){
+        //获取Cursor
+        Cursor c = db.rawQuery("SELECT * from "+CITY_TABLE_NAME+" WHERE city=?", new String[]{cityName});
+        //Cursor c = db.query(CITY_TABLE_NAME,number,"city",cityName,
+        //        null,null,null);
+        if (c.moveToFirst()) {
+            Log.d("location",c.getString(c.getColumnIndex("number")));
+            return c.getString(c.getColumnIndex("number"));
+        }else{
+            return "101010101";
+        }
+
+
     }
 
 }

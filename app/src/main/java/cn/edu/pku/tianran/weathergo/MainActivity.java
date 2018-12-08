@@ -37,8 +37,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.edu.pku.tianran.adapter.ViewPagerAdapter;
+import cn.edu.pku.tianran.app.MyApplication;
 import cn.edu.pku.tianran.bean.TodayWeather;
+import cn.edu.pku.tianran.db.CityDB;
 import cn.edu.pku.tianran.util.BDLocationUtils;
+import cn.edu.pku.tianran.util.Const;
 import cn.edu.pku.tianran.util.NetUtil;
 
 public class MainActivity extends Activity implements OnClickListener,ViewPager.OnPageChangeListener{
@@ -47,6 +50,9 @@ public class MainActivity extends Activity implements OnClickListener,ViewPager.
     //为更新按钮图标创建变量
     private ImageView mUpdateBtn;
     private ImageView mCitySelect;
+
+    //定位图标
+    private ImageView mLocationBtn;
 
     //初始化界面控件
     private TextView cityTv,timeTv,humidityTv,weekTv,pmDataTv,pmQualityTv,
@@ -100,9 +106,16 @@ public class MainActivity extends Activity implements OnClickListener,ViewPager.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.weather_info);
 
+        //定位图标增加监听器
+        mLocationBtn = findViewById(R.id.title_location);
+        mLocationBtn.setOnClickListener(this);
+
         mUpdateBtn = (ImageView) findViewById(R.id.title_update_btn);
         //给更新按钮图片添加监听器
         mUpdateBtn.setOnClickListener(this);
+
+        mCitySelect = findViewById(R.id.title_city_manager);
+        mCitySelect.setOnClickListener(this);
 
         //判断并显示网络状态
         if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE){
@@ -349,6 +362,31 @@ public class MainActivity extends Activity implements OnClickListener,ViewPager.
 
     @Override
     public void onClick(View view){
+        //点击定位图标，则根据当前定位更新天气
+        if(view.getId()==R.id.title_location){
+            //根据定位的城市信息获取城市代码
+            MyApplication myApplication = MyApplication.getInstance();
+            String LocationCityCode = myApplication.getNumber(Const.CITY.substring(0, Const.CITY.indexOf("市")));
+
+            Log.d("location","main_city_code:"+LocationCityCode);
+
+            //将城市代码存入到sharedpreferrence
+            //得到sharedpreferences对象
+            SharedPreferences sharedPreferences = getSharedPreferences("config",MODE_PRIVATE);
+            //创建编辑器
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            //存入
+            editor.putString("main_city_code",LocationCityCode);
+            editor.apply();
+
+            if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
+                Log.d("WeatherGo", "网络OK");
+                queryWeatherCode(LocationCityCode);
+            }
+
+
+        }
+
         //点击城市选择图标，则转到城市选择界面
         if(view.getId() == R.id.title_city_manager){
             //利用Intent来切换活动，目标活动SelectCity

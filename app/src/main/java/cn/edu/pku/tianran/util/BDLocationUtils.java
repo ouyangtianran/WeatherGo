@@ -46,10 +46,10 @@ public class BDLocationUtils {
         option.setLocationNotify(true);
         //可选，默认false，设置是否当GPS有效时按照1S/1次频率输出GPS结果
 
-        option.setIsNeedLocationDescribe(true);
+        option.setIsNeedLocationDescribe(false);
         //可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
 
-        option.setIsNeedLocationPoiList(true);
+        option.setIsNeedLocationPoiList(false);
         //可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
 
         option.setIgnoreKillProcess(false);
