@@ -366,7 +366,7 @@ public class MainActivity extends Activity implements OnClickListener,ViewPager.
         if(view.getId()==R.id.title_location){
             //根据定位的城市信息获取城市代码
             MyApplication myApplication = MyApplication.getInstance();
-            String LocationCityCode = myApplication.getNumber(Const.CITY.substring(0, Const.CITY.indexOf("市")));
+            String LocationCityCode = myApplication.getNumber(Const.DISTRICT.substring(0, Const.DISTRICT.indexOf("区")));
 
             Log.d("location","main_city_code:"+LocationCityCode);
 
